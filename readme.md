@@ -1,7 +1,9 @@
 # AI Newsletter Analysis
 
 ## Overview
-`ai-newsletter-analysis` is a personal project that utilizes Large Language Models (LLMs) to classify AI-related content from newsletters received in Gmail. It aims to build a comprehensive database of AI articles, facilitating efficient retrieval, summarization, and analysis. This tool is in its early development stages, focusing on leveraging advanced AI techniques for personalized newsletter management.
+`ai-newsletter-analysis` is a personal project that utilizes Large Language Models (LLMs) to classify AI-related content from newsletters received in Gmail. 
+ 
+> Project is in its early development stages, just started building
 
 ## Key Features
 - **LLM-Powered Classification**: Utilizes cutting-edge Large Language Models to accurately categorize newsletter content related to Artificial Intelligence.
