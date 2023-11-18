@@ -20,15 +20,3 @@
 ## Getting Started
 (Note: Detailed instructions on setting up and using the project will be added as it progresses.)
 
-## Contribution
-This being a personal project, contributions are currently limited. Suggestions and feedback, however, are highly appreciated.
-
-## License
-This project is licensed under the [MIT License](LICENSE).
-
-## Acknowledgements
-A heartfelt thank you to the AI community and everyone contributing to open-source projects and AI research.
-
----
-
-This version emphasizes the use of LLMs for content analysis and the creation of a searchable AI article database, aligning with your project's goals and features.
