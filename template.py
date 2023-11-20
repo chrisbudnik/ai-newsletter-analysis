@@ -50,9 +50,8 @@ def main():
     emails = []
     for message in messages:
         msg = get_message(service, 'me', message['id'])
-        # Here you need to parse the msg and extract the desired info
-        # For example, headers, sender, and content
-        # Add the extracted info to the emails list
+        # placeholder
+        pass
 
     df = pd.DataFrame(emails, columns=['Header', 'Sender', 'Content'])
     print(df)
