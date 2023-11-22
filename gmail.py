@@ -67,6 +67,7 @@ class GmailConnector:
 
         # Remove html-specific characters from the message
         msg = re.sub(r'[\xa0\u200c]', '', msg)
+        
         return msg
 
 
