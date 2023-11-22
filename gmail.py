@@ -33,7 +33,7 @@ class GmailConnector:
         messages = response.get('messages', [])
         return messages
 
-    def get_message_header(self, msg_id, user_id: str = "me"):
+    def process_headers(self, msg_id, user_id: str = "me"):
         # Get the headers of a single message.
         message = self.service.users().messages().get(userId=user_id, id=msg_id, format='metadata').execute()
         headers = message.get('payload', {}).get('headers', [])
@@ -42,6 +42,12 @@ class GmailConnector:
             if header['name'] in ['Subject', 'From', 'Date']:
                 header_info[header['name']] = header['value']
         return header_info
+    
+    def get_message_header(self, msg_id, user_id: str = "me"):
+        # Get the headers of a single message.
+        message = self.service.users().messages().get(userId=user_id, id=msg_id, format='metadata').execute()
+        headers = message.get('payload', {}).get('headers', [])
+        return {header['name']: header['value'] for header in headers}
 
 
 if __name__ == '__main__':
@@ -49,11 +55,12 @@ if __name__ == '__main__':
     messages = gmail.list_messages()
 
     emails = []
-    for message in messages:
-        header_info = gmail.get_message_header('me', message['id'])
+    for message in messages[:1]:
+        header_info = gmail.get_message_header(message['id'])
         emails.append(header_info)
+        print(header_info.keys())
     
-    df = pd.DataFrame(emails)
-    print(df)
+    #df = pd.DataFrame(emails)
+    # print(df)
 
 
