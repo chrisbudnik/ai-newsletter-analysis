@@ -1,5 +1,7 @@
 import base64
 import os
+import json
+import re
 import pandas as pd
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -33,34 +35,39 @@ class GmailConnector:
         messages = response.get('messages', [])
         return messages
 
-    def process_headers(self, msg_id, user_id: str = "me"):
-        # Get the headers of a single message.
-        message = self.service.users().messages().get(userId=user_id, id=msg_id, format='metadata').execute()
-        headers = message.get('payload', {}).get('headers', [])
-        header_info = {}
-        for header in headers:
-            if header['name'] in ['Subject', 'From', 'Date']:
-                header_info[header['name']] = header['value']
-        return header_info
-    
-    def get_message_header(self, msg_id, user_id: str = "me"):
-        # Get the headers of a single message.
+    def all_headers(self, msg_id, user_id: str = "me"):
+        """Get all the headers of a single message."""
+
         message = self.service.users().messages().get(userId=user_id, id=msg_id, format='metadata').execute()
         headers = message.get('payload', {}).get('headers', [])
         return {header['name']: header['value'] for header in headers}
 
+    def headers(self, msg_id, user_id: str = "me", default_headers: list = ['Subject', 'From', 'Date']):
+        """Get selected the headers of a single message."""
+        
+        headers = self.all_headers(msg_id, user_id)
+        return {header: headers[header] for header in default_headers}
 
-if __name__ == '__main__':
-    gmail = GmailConnector()
-    messages = gmail.list_messages()
+    def text_body(self, msg_id, user_id: str = "me"):
+        """Get the body of a single message."""
 
-    emails = []
-    for message in messages[:1]:
-        header_info = gmail.get_message_header(message['id'])
-        emails.append(header_info)
-        print(header_info.keys())
+        message = self.service.users().messages().get(userId=user_id, id=msg_id, format='full').execute()
+        data = message['payload']['parts'][0]['body']['data']
+        return self._parse_text_plain_message(data)
     
-    #df = pd.DataFrame(emails)
-    # print(df)
+    @staticmethod
+    def _parse_text_plain_message(msg: str) -> str:
+        """Parse text/plain message."""
+
+        # Decoding from base64 URL-safe encoded string
+        msg = base64.urlsafe_b64decode(msg).decode('utf-8')
+
+        # Remove '\r\n' from the message
+        msg = msg.replace('\r\n', '\n')
+
+        # Remove html-specific characters from the message
+        msg = re.sub(r'[\xa0\u200c]', '', msg)
+        return msg
+
 
 
