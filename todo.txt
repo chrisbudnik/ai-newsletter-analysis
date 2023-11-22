@@ -1,0 +1,8 @@
+what to extract from text:
+- date
+- subject
+- who
+- body text
+- links 
+- topics / names
+- promotes a product?

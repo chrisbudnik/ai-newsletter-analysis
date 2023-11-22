@@ -28,21 +28,21 @@ class GmailConnector:
         creds = Credentials.from_authorized_user_file(self.path, SCOPES)
         return build('gmail', 'v1', credentials=creds)
 
-    def list_messages(self, user_id: str = "me", max_results: int = 10):
+    def list_messages(self, user_id: str = "me", max_results: int = 10) -> list[dict]:
         """List the last 'max_results' messages of the user's mailbox."""
 
         response = self.service.users().messages().list(userId=user_id, maxResults=max_results).execute()
         messages = response.get('messages', [])
         return messages
 
-    def all_headers(self, msg_id, user_id: str = "me"):
+    def all_headers(self, msg_id, user_id: str = "me") -> dict:
         """Get all the headers of a single message."""
 
         message = self.service.users().messages().get(userId=user_id, id=msg_id, format='metadata').execute()
         headers = message.get('payload', {}).get('headers', [])
         return {header['name']: header['value'] for header in headers}
 
-    def headers(self, msg_id, user_id: str = "me", default_headers: list = ['Subject', 'From', 'Date']):
+    def headers(self, msg_id, user_id: str = "me", default_headers: list = ['Subject', 'From', 'Date']) -> dict:
         """Get selected the headers of a single message."""
         
         headers = self.all_headers(msg_id, user_id)
