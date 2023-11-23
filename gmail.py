@@ -64,6 +64,13 @@ class GmailConnector:
         data = message['payload']['parts'][1]['body']['data']
         return self._decode_and_transform_text(data)
     
+    def parts(self, msg_id, user_id: str = "me"):
+        """Get parts of a single message."""
+
+        message = self.service.users().messages().get(userId=user_id, id=msg_id, format='full').execute()
+        data = message['payload']['parts']
+        return data
+    
     @staticmethod
     def _decode_and_transform_text(msg: str) -> str:
         """Parse text/plain message."""
