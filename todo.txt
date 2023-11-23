@@ -6,3 +6,7 @@ what to extract from text:
 - links 
 - topics / names
 - promotes a product?
+
+enhacements to gmail class
+- search
+- pagination in list_messages
