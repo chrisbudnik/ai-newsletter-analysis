@@ -6,6 +6,23 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.auth.transport.requests import Request
+from dataclasses import dataclass
+
+@dataclass
+class GmailMessage:
+    """Container for Gmail message data."""
+    
+    id: str
+    thread_id: str
+    raw: str
+    headers: dict
+    text: str
+    sender_name: str
+    sender_email: str
+    date: str
+    title: str
+    has_attachment: bool
+
 
 class GmailHandler:
     """
@@ -50,11 +67,28 @@ class GmailHandler:
             print(f'An error occurred: {error}')
             return
 
-    def get_message(self, user_id, msg_id):
+    def get_text(self, user_id, msg_id) -> GmailMessage:
+        
         try:
             message = self.service.users().messages().get(userId=user_id, id=msg_id, format='raw').execute()
             msg_raw = message['raw'].encode('ASCII')
             return self.decode_and_transform_text(msg_raw)
+        
+        except HttpError as error:
+            print(f'An error occurred: {error}')
+            return None
+        
+    def get_message(self, user_id, msg_id) -> GmailMessage:
+        
+        try:
+            message = self.service.users().messages().get(userId=user_id, id=msg_id).execute()
+            
+            msg_raw = message['raw'].encode('ASCII')
+            msg_raw = self.decode_and_transform_text(msg_raw)
+
+            headers = message.get('payload', {}).get('headers', [])
+            headers_dict = {header['name']: header['value'] for header in headers}
+
         
         except HttpError as error:
             print(f'An error occurred: {error}')
