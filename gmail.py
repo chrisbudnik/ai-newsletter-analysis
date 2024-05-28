@@ -1,4 +1,5 @@
 import os
+import re
 import base64
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -52,25 +53,24 @@ class GmailHandler:
     def get_message(self, user_id, msg_id):
         try:
             message = self.service.users().messages().get(userId=user_id, id=msg_id, format='raw').execute()
-            msg_str = base64.urlsafe_b64decode(message['raw'].encode('ASCII')).decode('utf-8')
-            return msg_str
+            msg_raw = message['raw'].encode('ASCII')
+            return self.decode_and_transform_text(msg_raw)
+        
         except HttpError as error:
             print(f'An error occurred: {error}')
             return None
 
-    def parse_message(self, raw_message):
-        # This function can be customized to parse the email's content as needed
-        pass
+    @staticmethod
+    def decode_and_transform_text(msg: str) -> str:
+        """Parse text/plain message."""
 
-# Example usage
-def main():
-    gmail = GmailHandler('credentials.json')
-    messages = gmail.list_messages(query='is:unread')
-    if messages:
-        for msg in messages:
-            content = gmail.get_message('me', msg['id'])
-            # Now parse or process the content as needed
-            print(content)
+        # Decoding from base64 URL-safe encoded string
+        msg = base64.urlsafe_b64decode(msg).decode('utf-8')
 
-if __name__ == '__main__':
-    main()
+        # Remove '\r\n' from the message
+        msg = msg.replace('\r\n', '\n')
+
+        # Remove html-specific characters from the message
+        msg = re.sub(r'[\xa0\u200c]', '', msg)
+        
+        return msg
